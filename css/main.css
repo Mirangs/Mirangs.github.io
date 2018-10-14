@@ -862,3 +862,38 @@ input[type=radio]:checked + .upload-effect-label .upload-effect-preview {
 .footer-social-item-vk {
   background-position: -84px 0;
 }
+
+.social__comments-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 600px;
+  color: #000;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.social__comment {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.social__comment:last-child {
+  margin-bottom: 0;
+}
+
+.social__comment img {
+  margin-right: 20px;
+}
+
+.social__text {
+  text-align: left;
+  margin: 0;
+}
+
+.social__caption {
+  padding: 10px;
+  color: #000;
+  font-weight: bold;
+}
