@@ -56,14 +56,133 @@ var pictureTemplate = document.querySelector('#picture-template')
                             .querySelector('.picture');
 var photosContainer = document.querySelector('.pictures');
 var bigPicture = document.querySelector('.gallery-overlay');
+var bigPictureClose = bigPicture.querySelector('.gallery-overlay-close');
 
 fillContainer(photosContainer, photos);
 
-bigPicture.classList.remove('hidden');
-bigPicture.querySelector('.gallery-overlay-image').src = photos[0].url;
-bigPicture.querySelector('.likes-count').textContent = photos[0].likes;
-bigPicture.querySelector('.comments-count').textContent = comments.length;
+var showBigPicture = function(bigPicture, src, comments, description, likes) {
+    bigPicture.classList.remove('hidden');
+    bigPicture.querySelector('.gallery-overlay-image').src = src;
+    bigPicture.querySelector('.likes-count').textContent = likes;
+    bigPicture.querySelector('.comments-count').textContent = comments.length;
+    bigPicture.querySelector('.social__caption').textContent = description;
 
+    bigPictureClose.addEventListener('click', function() {
+        bigPicture.classList.add('hidden');
+    });
+}
+
+var uploadFile = document.querySelector('#upload-file');
+var uploadForm = document.querySelector('.upload-overlay');
+var uploadFormClose = uploadForm.querySelector('#upload-cancel');
+
+uploadFile.addEventListener('change', function() {
+    uploadForm.classList.remove('hidden');
+
+    uploadFormClose.addEventListener('click', function() {
+        uploadForm.classList.add('hidden');
+        uploadFile.value = null;
+    });
+});
+
+var getFilterValue = function(filter) {
+    var lineWidth = filterEffectLine.offsetWidth;
+    var pinPosition = parseInt(getComputedStyle(filterEffectPin).left);
+    return pinPosition / lineWidth * filters[filter].max + filters[filter].min;
+}
+
+var filterEffectLine = uploadForm.querySelector('.upload-effect-level-line');
+var filterEffectPin = uploadForm.querySelector('.upload-effect-level-pin');
+var filterEffectLevel = uploadForm.querySelector('.upload-effect-level-val');
+
+var filters = {
+    none: {
+        class: 'picture-filter--none'
+    },
+    chrome: {
+        class: 'picture-filter--chrome',
+        css: 'grayscale',
+        min: 0,
+        max: 1
+    },
+    sepia: {
+        class: 'picture-filter--sepia',
+        css: 'sepia',
+        max: 100,
+        min: 0,
+        fraction: '%'
+    },
+    marvin: {
+        class: 'picture-filter--marvin',
+        css: 'invert',
+        max: 100,
+        min: 0,
+        fraction: '%'
+    },
+    phobos: {
+        class: 'picture-filter--phobos',
+        css: 'blur',
+        max: 20,
+        min: 0,
+        fraction: 'px'
+    },
+    heat: {
+        class: 'picture-filter--heat',
+        css: 'brightness',
+        max: 300,
+        min: 100,
+        fraction: '%'
+    }
+};
+
+var filterNone = uploadForm.querySelector('[for="upload-effect-none"]');
+var filterChrome = uploadForm.querySelector('[for="upload-effect-chrome"]');
+var filterSepia = uploadForm.querySelector('[for="upload-effect-sepia"]');
+var filterMarvin = uploadForm.querySelector('[for="upload-effect-marvin"]');
+var filterPhobos = uploadForm.querySelector('[for="upload-effect-phobos"]');
+var filterHeat = uploadForm.querySelector('[for="upload-effect-heat"]');
+var previewContainer = uploadForm.querySelector('.img-upload__preview');
+
+filterNone.addEventListener('click', function() {
+    previewContainer.classList = 'img-upload__preview';
+    previewContainer.removeAttribute('style');
+    previewContainer.classList.add(filters.none.class);
+});
+
+filterChrome.addEventListener('click', function() {
+    previewContainer.classList = 'img-upload__preview';
+    previewContainer.removeAttribute('style');
+    previewContainer.classList.add(filters.chrome.class);
+    previewContainer.style = '' + 'filter: ' + filters.chrome.css + '(' + getFilterValue('chrome') + ');';
+});
+
+filterSepia.addEventListener('click', function() {
+    previewContainer.classList = 'img-upload__preview';
+    previewContainer.removeAttribute('style');
+    previewContainer.classList.add(filters.sepia.class);
+    previewContainer.style = 'filter: ' + filters.sepia.css + '(' + getFilterValue('sepia') + filters.sepia.fraction + ');';
+});
+
+filterMarvin.addEventListener('click', function() {
+    previewContainer.classList = 'img-upload__preview';
+    previewContainer.removeAttribute('style');
+    previewContainer.classList.add(filters.marvin.class);
+    previewContainer.style ='filter: ' + filters.marvin.css + '(' + getFilterValue('marvin') + filters.marvin.fraction + ');';
+});
+
+filterPhobos.addEventListener('click', function() {
+    previewContainer.classList = 'img-upload__preview';
+    previewContainer.removeAttribute('style');
+    previewContainer.classList.add(filters.phobos.class);
+    previewContainer.style ='filter: ' + filters.phobos.css + '(' + getFilterValue('phobos') + filters.phobos.fraction + ');';
+});
+
+filterHeat.addEventListener('click', function() {
+    previewContainer.classList = 'img-upload__preview';
+    previewContainer.removeAttribute('style');
+    previewContainer.classList.add(filters.heat.class);
+    previewContainer.style ='filter: ' + filters.heat.css + '(' + getFilterValue('heat') + filters.heat.fraction + ');';
+});
 
 var commentFragment = document.createDocumentFragment();
 var socialContainer = document.querySelector('.social__comments');
@@ -94,4 +213,21 @@ for (var i = 0; i < comments.length; i++) {
 
 commentFragment.appendChild(socialCommentsList);
 socialContainer.appendChild(commentFragment);
-document.querySelector('.social__caption').textContent = photos[0].description;
+
+var findElement = function(evt) {
+    var srcValue = evt.target.attributes.src.nodeValue;
+    for (var key in photos) {
+        if (photos[key].url === srcValue) {
+            console.log(photos[key]);
+            return photos[key];
+        }
+    }
+}
+
+photosContainer.addEventListener('click', function(evt) {
+    evt.preventDefault();
+    if (evt.target.parentNode.classList.contains('picture') || evt.target === 'img') {
+        var object = findElement(evt);
+        showBigPicture(bigPicture, object.url, object.comments, object.description, object.likes);
+    }
+});
