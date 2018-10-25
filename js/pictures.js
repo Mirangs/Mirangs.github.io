@@ -1,37 +1,14 @@
 'use strict';
 
 (function() {
-    var generateRandom = function(min, max) {
+    window.generateRandom = function(min, max) {
         return Math.floor(Math.random() * (max - min) + min);
     };
 
     window.addEventListener('load', function() {
-        window.download(fillContainer, function(msg) {
-            console.error(msg);
-        });
+        document.querySelector('.filters').classList.remove('hidden');
     });
 
-    var pictureTemplate = document.querySelector('#picture-template')
-    .content
-    .querySelector('.picture');
-    
-    var createPicture = function(template, photo) {
-        var pictureElement = template.cloneNode(true);
-        pictureElement.querySelector('img').src = photo.url;
-        pictureElement.querySelector('.picture-likes').textContent = photo.likes;
-        pictureElement.querySelector('.picture-comments').textContent = photo.comments;
-        return pictureElement;
-    };
-    
-    var fillContainer = function(photosList) {
-        var fragment = document.createDocumentFragment();
-    
-        for (var i = 0; i < photosList.length; i++) {
-            fragment.appendChild(createPicture(pictureTemplate, photosList[i]));
-        }
-        photosContainer.appendChild(fragment);
-    }
-    
     var uploadFile = document.querySelector('#upload-file');
     var uploadOverlay = document.querySelector('.upload-overlay');
     var uploadForm = document.querySelector('.upload-form');
@@ -170,13 +147,13 @@
         var srcValue = elem.attributes.src.nodeValue;
         for (var key in list) {
             if (list[key].url === srcValue) {
-                break;
+                showBigPicture(bigPicture, list[key]);
+                return;
             }  
         }
-        showBigPicture(bigPicture, list[key]);
     };
 
-    var photosContainer = document.querySelector('.pictures');
+
     var bigPicture = document.querySelector('.gallery-overlay');
     var bigPictureClose = bigPicture.querySelector('.gallery-overlay-close');
 
@@ -222,8 +199,16 @@
             bigPicture.classList.add('hidden');
             socialCommentsList.parentNode.removeChild(socialCommentsList);
         });
+
+        document.addEventListener('keydown', function(evt) {
+            if (evt.keyCode === 27) {
+                bigPicture.classList.add('hidden');
+                socialCommentsList.parentNode.removeChild(socialCommentsList);
+            }
+        });
     };
-    
+
+    var photosContainer = document.querySelector('.pictures');
     photosContainer.addEventListener('click', function(evt) {
         evt.preventDefault();
         if (evt.target.parentNode.classList.contains('picture') || evt.target === 'img') {
