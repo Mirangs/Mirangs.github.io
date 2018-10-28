@@ -188,7 +188,6 @@
             var socialText = document.createElement('p');
             socialText.classList.add('social__text');
             socialText.textContent = picture.comments[i];
-            console.log(i);
         
             socialComment.appendChild(socialText);
         
