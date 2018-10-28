@@ -49,7 +49,7 @@
         phobos: {
             class: 'picture-filter--phobos',
             css: 'blur',
-            max: 3,
+            max: 5,
             min: 0,
             fraction: 'px'
         },
